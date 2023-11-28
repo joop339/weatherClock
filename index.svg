@@ -305,11 +305,11 @@ function updateImageBasedOnWeather(imageElem, weatherCondition, isNighttime, tem
 	
 	if (isNighttime)
 	{
-		imagePath = 'images/'+imageName+'_night'+'.gif';
+		imagePath = 'Images/'+imageName+'_night'+'.gif';
 	}
 	else
 	{
-		imagePath = 'images/'+imageName+'_day'+'.gif';
+		imagePath = 'Images/'+imageName+'_day'+'.gif';
 	}
 	
 
