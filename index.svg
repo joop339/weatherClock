@@ -44,7 +44,7 @@ function loadImageMarks() {
 
         // Calculate position for every hour
         let angle = (i / 12) * 2 * Math.PI;
-        let radius = 0.89;
+        let radius = 0.79;
         
         imageElem.setAttribute("x", String(Math.sin(angle) * radius - 0.11));
         imageElem.setAttribute("y", String(-Math.cos(angle) * radius - 0.10));
