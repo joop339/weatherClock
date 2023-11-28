@@ -72,7 +72,7 @@ function loadWeatherMarks() {
 			{
 				const currentHour = new Date().getHours();
 				const svgElement = document.querySelector('svg');
-				svgElement.style.backgroundImage = 'url(images/fwn.png)';
+				svgElement.style.backgroundImage = 'url(Images/fwn.png)';
 				                svgElement.setAttribute("viewBox", "-1 -1 2 2");
                 svgElement.style.backgroundSize = "100% 100%";
 			}
@@ -80,7 +80,7 @@ function loadWeatherMarks() {
 			{
 				const currentHour = new Date().getHours();
 				const svgElement = document.querySelector('svg');
-				svgElement.style.backgroundImage = 'url(images/fwd.png)';
+				svgElement.style.backgroundImage = 'url(Images/fwd.png)';
 				                svgElement.setAttribute("viewBox", "-1 -1 2 2");
                 svgElement.style.backgroundSize = "100% 100%";
 			}
