@@ -318,13 +318,13 @@ function updateImageBasedOnWeather(imageElem, weatherCondition, isNighttime, tem
 	
     // Create a text element
     let textElem = document.createElementNS(document.documentElement.namespaceURI, "text");
-    textElem.setAttribute("x", parseFloat(imageElem.getAttribute("x")) + 0.06); // Adjust x position
-    textElem.setAttribute("y", parseFloat(imageElem.getAttribute("y")) + 0.12); // Adjust y position
+    textElem.setAttribute("x", parseFloat(imageElem.getAttribute("x")) + 0.04); // Adjust x position
+    textElem.setAttribute("y", parseFloat(imageElem.getAttribute("y")) + 0.25); // Adjust y position
     textElem.setAttribute("font-size", "0.06"); // Increase font size for better visibility
-    textElem.setAttribute("fill", "white"); // Set text color to white
+    textElem.setAttribute("fill", "red"); // Set text color to white
 
     // Set the stroke attributes for a black border
-    textElem.setAttribute("stroke", "black");
+    textElem.setAttribute("stroke", "red");
     textElem.setAttribute("stroke-width", "0.002"); // Adjust the border width as needed
 
     // Set the temperature text content
