@@ -1,0 +1,390 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!--
+  - Full screen clock (analog with seconds)
+  - Copyright (c) 2022 Project Nayuki. All rights reserved.
+  - 
+  - https://www.nayuki.io/page/full-screen-clock-javascript
+  -->
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="-1 -1 2 2" style="background-color:#FFFFFF" fill="none" stroke="none">
+
+	<text id="voeltals" x="-0.25" y="0.2" font-size="0.08" fill="#FFFFFF">Voelt als</text>
+	<text id="wind" x="-0.25" y="0.3" font-size="0.08" fill="#FFFFFF">Wind</text>
+	<text id="luchtvochtigheid" x="-0.25" y="0.4" font-size="0.08" fill="#FFFFFF">Luchtvochtigheid</text>
+	<text id="druk" x="-0.25" y="0.5" font-size="0.08" fill="#FFFFFF">Druk</text>
+
+	<defs>
+		<circle id="hour-mark" cx="0" cy="-0.95" r="0.04"/>
+	</defs>
+	<g id="hour-marks" fill="#000000"/>
+	<g id="image-marks"/>
+	
+	<g id="hands" stroke="" stroke-linecap="round" style="display:none">
+		<line id="hour-hand" 	stroke="#000000"  	x1="0" y1="0" x2="0" y2="-0.50" stroke-width="0.05"/>
+		<line id="minute-hand" 	stroke="#000000" 	x1="0" y1="0" x2="0" y2="-0.75" stroke-width="0.04"/>
+		<line id="second-hand" 	stroke="#f44336" 	x1="0" y1="0" x2="0" y2="-0.85" stroke-width="0.01"/>
+	</g>
+	
+
+	
+	<script>
+	<![CDATA[
+	"use strict";
+	
+	function initialize() {
+		loadImageMarks();
+		updateClock();
+		document.getElementById("hands").removeAttribute("style");
+	}
+	
+function loadImageMarks() {
+    for (let i = 0; i < 12; i++) {
+        let imageElem = document.getElementById("image-marks").appendChild(
+            document.createElementNS(document.documentElement.namespaceURI, "image"));
+
+        // Calculate position for every hour
+        let angle = (i / 12) * 2 * Math.PI;
+        let radius = 0.89;
+        
+        imageElem.setAttribute("x", String(Math.sin(angle) * radius - 0.11));
+        imageElem.setAttribute("y", String(-Math.cos(angle) * radius - 0.10));
+        imageElem.setAttribute("width", "0.2");
+        imageElem.setAttribute("height", "0.2");
+		
+    }
+}
+
+function loadWeatherMarks() {
+    const apiKey = 'aa82d4ed138b0bb3c7fa8b021d80a2d2'; // Replace with your actual OpenWeatherMap API key
+    const city = 'Bontebok'; // Replace with the desired city
+    
+    const weatherEndpoint = `https://api.openweathermap.org/data/2.5/onecall?lat=52.96186053607732&lon=6.027527962842289&exclude=daily,minutely,current,alerts&units=metric&appid=aa82d4ed138b0bb3c7fa8b021d80a2d2`;
+    // Fetch weather data
+    fetch(weatherEndpoint)
+        .then(response => response.json())
+        .then(data => {
+            // Assuming data.list is an array of hourly weather conditions
+            if (data && data.hourly && data.hourly.length >= 12) {
+                const currentHour = new Date().getHours();
+		
+			
+			if (currentHour >= 18 || currentHour < 6)
+			{
+				const currentHour = new Date().getHours();
+				const svgElement = document.querySelector('svg');
+				svgElement.style.backgroundImage = 'url(images/fwn.png)';
+				                svgElement.setAttribute("viewBox", "-1 -1 2 2");
+                svgElement.style.backgroundSize = "100% 100%";
+			}
+			else
+			{
+				const currentHour = new Date().getHours();
+				const svgElement = document.querySelector('svg');
+				svgElement.style.backgroundImage = 'url(images/fwd.png)';
+				                svgElement.setAttribute("viewBox", "-1 -1 2 2");
+                svgElement.style.backgroundSize = "100% 100%";
+			}
+		
+                for (let i = 0; i < 12; i++) {
+                    // Calculate the index in the weather data array corresponding to the current hour
+                    const weatherIndex = i;
+
+					const timestamp = data.hourly[weatherIndex].dt;
+					const date = new Date(timestamp * 1000); // Convert timestamp to milliseconds
+					
+					console.log(date.getHours());
+					console.log(date);
+					console.log(data.hourly[weatherIndex].weather[0].id);
+					console.log(date.getHours() % 12);
+					
+					const isNighttime = date.getHours() >= 18 || date.getHours() < 6;
+					
+					let imageElem = document.getElementById("image-marks").children[date.getHours() % 12];
+					
+					//update information based on current timestamp
+					if (date.getHours() == currentHour)
+					{
+						document.getElementById('voeltals').innerHTML = 'Voelt als: ' + data.hourly[weatherIndex].feels_like.toFixed(1) + '°C';
+						document.getElementById('wind').innerHTML = 'Wind: ' + mpsToBeaufort(data.hourly[weatherIndex].wind_speed) + ' Bft';
+						document.getElementById('luchtvochtigheid').innerHTML = 'Luchtvochtigheid: ' + data.hourly[weatherIndex].humidity + '%';
+						document.getElementById('druk').innerHTML = 'Luchtdruk: ' + data.hourly[weatherIndex].pressure + ' hPa';
+					}
+					
+                    // Update the image based on weather conditions
+                    updateImageBasedOnWeather(imageElem, data.hourly[weatherIndex].weather[0].id, isNighttime, data.hourly[weatherIndex].temp.toFixed(1));
+                }
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching weather data:', error);
+        });
+}
+
+function updateImageBasedOnWeather(imageElem, weatherCondition, isNighttime, temperature) {
+    // You should define a mapping between OpenWeatherMap weather conditions and image paths
+    // For example, if weatherCondition is 'Rain', set the image path to 'images/rain.png'
+    // Update the mapping based on your actual use case and available images
+
+    let imagePath;
+	var imageName = '';
+	
+
+	
+	console.log('aaa');
+	
+	switch (weatherCondition)
+	{
+	case 200: //thunderstorm with light rain
+		imageName = 'scattered_thunder';
+		break;
+	case 201: //thunderstorm with rain
+		imageName = 'scattered_thunder';
+		break;
+	case 202: //thunderstorm with heavy rain
+		imageName = 'shower_thunder';	
+		break;
+	case 210: //light thunderstorm
+		imageName = 'scattered_thunder';
+		break;
+	case 211: //thunderstorm
+		imageName = 'scattered_thunder';	
+		break;
+	case 212: //heavy thunderstorm
+		imageName = 'shower_thunder';	
+		break;
+	case 221: //ragged thunderstorm
+		imageName = 'shower_thunder';	
+		break;
+	case 230: //thunderstorm with light drizzle
+		imageName = 'scattered_thunder';	
+		break;
+	case 231: //thunderstorm with drizzle
+		imageName = 'scattered_thunder';
+		break;
+	case 232: //thunderstorm with heavy drizzle
+		imageName = 'shower_thunder';	
+		break;
+	case 300: //light intensity drizzle
+		imageName = 'light_drizzle';	
+		break;
+	case 301: //drizzle
+		imageName = 'light_drizzle';	
+		break;
+	case 302: //heavy intensity drizzle
+		imageName = 'scattered_showers';	
+		break;
+	case 310: //light intensity drizzle rain
+		imageName = 'scattered_showers';	
+		break;
+	case 311: //drizzle rain
+		imageName = 'scattered_showers';	
+		break;
+	case 312: //heavy intensity drizzle rain
+		imageName = 'heavy_rain';	
+		break;
+	case 313: //shower rain and drizzle
+		imageName = 'heavy_rain';	
+		break;
+	case 314: //heavy shower rain and drizzle
+		imageName = 'heavy_rain';
+		break;
+	case 321: //shower drizzle
+		imageName = 'heavy_rain';	
+		break;
+	case 500: //light rain
+		imageName = 'scattered_showers';	
+		break;
+	case 501: //moderate rain
+		imageName = 'showers_rain';		
+		break;
+	case 502: //heavy intensity rain
+		imageName = 'heavy_rain';		
+		break;
+	case 503: //very heavy rain
+		imageName = 'heavy_rain';	
+		break;
+	case 504: //extreme rain
+		imageName = 'heavy_rain';
+		break;
+	case 511: //freezing rain
+		imageName = 'snow_rain';	
+		break;
+	case 520: //light intensity shower rain
+		imageName = 'showers_rain';		
+		break;
+	case 521: //shower rain
+		imageName = 'showers_rain';		
+		break;
+	case 522: //heavy intensity shower rain
+		imageName = 'heavy_rain';	
+		break;
+	case 531: //ragged shower rain
+		imageName = 'heavy_rain';
+		break;
+	case 600: //light snow
+		imageName = 'flurries';	
+		break;
+	case 601: //snow
+		imageName = 'snow';	
+		break;
+	case 602: //heavy snow
+		imageName = 'snow';	
+		break;
+	case 611: //sleet
+		imageName = 'snow_rain';	
+		break;
+	case 612: //light shower sleet
+		imageName = 'flurries';	
+		break;
+	case 613: //shower sleet
+		imageName = 'snow';	
+		break;
+	case 615: //light rain and snow
+		imageName = 'snow_rain';	
+		break;
+	case 616: //rain and snow
+		imageName = 'snow_rain';	
+		break;
+	case 620: //light shower snow
+		imageName = 'snow_rain';	
+		break;
+	case 621: //shower snow
+		imageName = 'snow_rain';		
+		break;
+	case 622: //heavy shower snow
+		imageName = 'snow';	
+		break;
+	case 701: //mist
+		imageName = 'fog';	
+		break;
+	case 711: //smoke
+		imageName = 'fog';	
+		break;
+	case 721: //haze
+		imageName = 'fog';	
+		break;
+	case 731: //sand/dust whirls
+		imageName = 'fog';	
+		break;
+	case 741: //fog
+		imageName = 'fog';	
+		break;
+	case 751: //sand
+		imageName = 'fog';	
+		break;
+	case 761: //dust
+		imageName = 'fog';	
+		break;
+	case 762: //volcanic ash
+		imageName = 'fog';	
+		break;
+	case 771: //squalls
+		imageName = 'fog';	
+		break;
+	case 781: //tornado
+		imageName = 'fog';	
+		break;
+	case 800: //Clear
+		imageName = 'clear';	
+		break;
+	case 801: //few clouds: 11-25%
+		imageName = 'mostly_clear';	
+		break;
+	case 802: //scattered clouds: 25-50%
+		imageName = 'partly_cloudy';	
+		break;
+	case 803: //broken clouds: 51-84%
+		imageName = 'mostly_cloudy';	
+		break;
+	case 804: //overcast clouds: 85-100%
+		imageName = 'cloudy';	
+		break;
+	}
+	
+	console.log('bbbb');
+	
+	if (isNighttime)
+	{
+		imagePath = 'images/'+imageName+'_night'+'.gif';
+	}
+	else
+	{
+		imagePath = 'images/'+imageName+'_day'+'.gif';
+	}
+	
+
+    // Update the image path
+    imageElem.setAttribute("href", imagePath);
+	
+    // Create a text element
+    let textElem = document.createElementNS(document.documentElement.namespaceURI, "text");
+    textElem.setAttribute("x", parseFloat(imageElem.getAttribute("x")) + 0.06); // Adjust x position
+    textElem.setAttribute("y", parseFloat(imageElem.getAttribute("y")) + 0.12); // Adjust y position
+    textElem.setAttribute("font-size", "0.06"); // Increase font size for better visibility
+    textElem.setAttribute("fill", "white"); // Set text color to white
+
+    // Set the stroke attributes for a black border
+    textElem.setAttribute("stroke", "black");
+    textElem.setAttribute("stroke-width", "0.002"); // Adjust the border width as needed
+
+    // Set the temperature text content
+    textElem.textContent = temperature + '°C';
+
+    // Append the text element to the same container as the image
+    imageElem.parentNode.appendChild(textElem);
+}
+	
+	function updateClock() {
+		const d = new Date();
+		rotateElem(document.getElementById("hour-hand"),
+			(d.getHours() + d.getMinutes() / 60 + d.getSeconds() / 3600) / 12 * 360);
+		rotateElem(document.getElementById("minute-hand"),
+			(d.getMinutes() + d.getSeconds() / 60) / 60 * 360);
+		rotateElem(document.getElementById("second-hand"),
+			d.getSeconds() / 60 * 360);
+		setTimeout(updateClock, 1000 - d.getTime() % 1000 + 20);
+	}
+	
+	function rotateElem(elem, degrees) {
+		elem.setAttribute("transform", "rotate(" + degrees + ")");
+	}
+	
+	function mpsToBeaufort(windSpeed) {
+  if (windSpeed < 1.0) {
+    return 0; // Calm
+  } else if (windSpeed <= 5.5) {
+    return 1; // Light air
+  } else if (windSpeed <= 11.1) {
+    return 2; // Light breeze
+  } else if (windSpeed <= 19.8) {
+    return 3; // Gentle breeze
+  } else if (windSpeed <= 28.4) {
+    return 4; // Moderate breeze
+  } else if (windSpeed <= 38.8) {
+    return 5; // Fresh breeze
+  } else if (windSpeed <= 49.9) {
+    return 6; // Strong breeze
+  } else if (windSpeed <= 61.1) {
+    return 7; // Near gale
+  } else if (windSpeed <= 74.4) {
+    return 8; // Gale
+  } else if (windSpeed <= 88.0) {
+    return 9; // Strong gale
+  } else if (windSpeed <= 102.7) {
+    return 10; // Storm
+  } else if (windSpeed <= 117.4) {
+    return 11; // Violent storm
+  } else {
+    return 12; // Hurricane
+  }
+}
+	
+	loadWeatherMarks();
+	setInterval(loadWeatherMarks, 5 * 60 * 1000);
+	
+
+    initialize();
+
+	]]>
+	</script>
+</svg>
