@@ -57,7 +57,13 @@ function loadImageMarks() {
 function loadWeatherMarks() {
     const apiKey = 'aa82d4ed138b0bb3c7fa8b021d80a2d2'; // Replace with your actual OpenWeatherMap API key
     const city = 'Bontebok'; // Replace with the desired city
-    
+
+		var textElementss = document.getElementsByClassName('aars');
+	while (textElementss.length > 0)
+{
+textElementss[0].parentNode.removeChild(textElementss[0]);
+}
+		
     const weatherEndpoint = `https://api.openweathermap.org/data/2.5/onecall?lat=52.96186053607732&lon=6.027527962842289&exclude=daily,minutely,current,alerts&units=metric&appid=aa82d4ed138b0bb3c7fa8b021d80a2d2`;
     // Fetch weather data
     fetch(weatherEndpoint)
@@ -322,7 +328,7 @@ function updateImageBasedOnWeather(imageElem, weatherCondition, isNighttime, tem
     textElem.setAttribute("y", parseFloat(imageElem.getAttribute("y")) + 0.25); // Adjust y position
     textElem.setAttribute("font-size", "0.06"); // Increase font size for better visibility
     textElem.setAttribute("fill", "red"); // Set text color to white
-
+	textElem.classList.add('aars');
     // Set the stroke attributes for a black border
     textElem.setAttribute("stroke", "red");
     textElem.setAttribute("stroke-width", "0.002"); // Adjust the border width as needed
