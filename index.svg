@@ -64,7 +64,7 @@ function loadWeatherMarks() {
 textElementss[0].parentNode.removeChild(textElementss[0]);
 }
 		
-    const weatherEndpoint = `https://api.openweathermap.org/data/2.5/onecall?lat=52.96186053607732&lon=6.027527962842289&exclude=daily,minutely,current,alerts&units=metric&appid=aa82d4ed138b0bb3c7fa8b021d80a2d2`;
+    const weatherEndpoint = `https://api.openweathermap.org/data/3.0/onecall?lat=52.96186053607732&lon=6.027527962842289&exclude=daily,minutely,current,alerts&units=metric&appid=aa82d4ed138b0bb3c7fa8b021d80a2d2`;
     // Fetch weather data
     fetch(weatherEndpoint)
         .then(response => response.json())
