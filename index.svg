@@ -6,7 +6,14 @@
   - 
   - https://www.nayuki.io/page/full-screen-clock-javascript
   -->
-<svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="-1 -1 2 2" style="background-color:#FFFFFF" fill="none" stroke="none">
+<svg xmlns="http://www.w3.org/2000/svg" 
+     version="1.1" 
+     width="720" 
+     height="720" 
+     viewBox="-1 -1 2 2" 
+     style="background-color:#FFFFFF" 
+     fill="none" 
+     stroke="none">
 
 	<text id="voeltals" x="-0.25" y="0.2" font-size="0.08" fill="#FFFFFF">Voelt als</text>
 	<text id="wind" x="-0.25" y="0.3" font-size="0.08" fill="#FFFFFF">Wind</text>
